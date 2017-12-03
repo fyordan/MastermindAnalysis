@@ -7,6 +7,9 @@ Once you play a move, you will see an output of the form
 Out: (a, b) where a is how many symbols are correct,
 and b is how many symbols AND their position are correct. The game ends when b = 3.
 
+The moves are represented as a string made up from the characters S, T, and C.
+S = square, T = triangle, C = circle
+
 All of the settings (such as distribution sequences are drawn from, or verbosity) are hard coded.
 
 If verbosity is set to True, the likelihood of all still possible sequences are printed.

@@ -4,7 +4,7 @@ import numpy as np
 
 normal_dist = {"S":1./3., "C":1/3., "T":1/3.0}
 r1_2_3_dist = {"S":2./6., "C":3/6., "T":1/6.0}
-r1_1_3_dist = {"S":2./5., "C":1/5., "T":3/5.0}
+r1_1_3_dist = {"S":1./5., "C":1/5., "T":3/5.0}
 
 def get_random_sequence(dist, length):
     return ''.join(np.random.choice([x for x in dist], length, p=[dist[x] for x in dist]))
