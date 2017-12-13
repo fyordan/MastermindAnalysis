@@ -37,7 +37,7 @@ def observe_sequence(sequence, solution):
     solution_cnt = Counter(solution)
     for symbol in sequence:
         correct_color_count[symbol] = min(sequence_cnt[symbol], solution_cnt[symbol])
-    for i in xrange(len(sequence)):
+    for i in range(len(sequence)):
         if sequence[i] == solution[i]:
             total_correct_pos_count += 1
             correct_color_count[sequence[i]] -= 1
@@ -64,25 +64,25 @@ class Round:
         self.solution_prediction = sequence_posteriors(self.sequences, dist)
         self.verbose = verbose
         if (verbose):
-            print "\n"
-            print "New Game"
-            print "Game started with solution: " + self.solution
-            print "P(solution) = " + str(self.solution_prediction[self.solution])
-            print "-------------------------------------------------------"
+            print("\n")
+            print("New Game")
+            print("Game started with solution: " + self.solution)
+            print("P(solution) = " + str(self.solution_prediction[self.solution]))
+            print("-------------------------------------------------------")
 
     def next_turn(self, sequence):
         self.points += 1
         if (self.verbose):
-            print "Move: " + sequence
-            print "P(sequence win) = " + str(self.solution_prediction[sequence])
-            print "Out: " + str(observe_sequence(sequence, self.solution))
+            print("Move: " + sequence)
+            print("P(sequence win) = " + str(self.solution_prediction[sequence]))
+            print("Out: " + str(observe_sequence(sequence, self.solution)))
 
         self.solution_prediction = update_belief_state(
             self.sequences, sequence, self.solution, self.game_dist)
         if (self.verbose):
-            print "New Posteriors: "
-            print self.solution_prediction
-            print "--------------------------------------------------------"
+            print("New Posteriors: ")
+            print(self.solution_prediction)
+            print("--------------------------------------------------------")
 
 
 # round = Round("CTC", normal_dist, verbose=True)
@@ -92,11 +92,11 @@ class Round:
 
 if __name__ == '__main__':
     sol = get_random_sequence(r1_2_3_dist, 3)
-    out = (0,0)
+    out = (0,0) 
     round = Round(sol, r1_2_3_dist, verbose=False)
     while (out[1] != 3):
         seq = raw_input("What's your move? ")
         round.next_turn(seq)
         out = observe_sequence(seq, sol)
-        print "Out: " + str(out)
-    print "Thanks For Playing! Score: " + str(round.points) 
+        print("Out: " + str(out))
+    print("Thanks For Playing! Score: " + str(round.points))
