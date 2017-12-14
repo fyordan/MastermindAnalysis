@@ -93,7 +93,7 @@ class Round:
 if __name__ == '__main__':
     sol = get_random_sequence(r1_2_3_dist, 3)
     out = (0,0) 
-    round = Round(sol, r1_2_3_dist, verbose=False)
+    round = Round(sol, r1_2_3_dist, verbose=True)
     while (out[1] != 3):
         seq = raw_input("What's your move? ")
         round.next_turn(seq)
