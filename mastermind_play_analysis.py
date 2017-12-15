@@ -30,7 +30,9 @@ for index, row in data.iterrows():
     print('Player:',row.Participant)
     print(row.Round)
     print(player_round.solution_prediction[sol])
+    player_guesses = []
     for seq in sequences:
+        player_guesses.append(player_round.solution_prediction[seq])
         player_round.next_turn(seq)
         player_prob.append(player_round.solution_prediction[sol])
         print(player_round.solution_prediction[sol])
@@ -42,8 +44,10 @@ for index, row in data.iterrows():
     out = (0,0)
     print("Solution:", sol)
     turns = 0
+    ai_guesses = []
     while (out[1] != 3):
         seq = ai_player.play_turn(out)
+        ai_guesses.append(ai_round.solution_prediction[seq])
         turns += 1
         print("Chosen sequence:",seq)
         ai_round.next_turn(seq)
@@ -73,7 +77,9 @@ for index, row in data.iterrows():
             ai_prob.append(1.0)
         else:
             player_prob.append(1.0)
-    
+
+    # Graph 'Percieved Probability' of Correct Solution
+    plt.figure(1)
     plt.plot(x, player_prob, color=player_color)
     plt.plot(x, ai_prob, color=ai_color)
     plt.axvline(x=vline, color=win_color,linestyle='dashed')
@@ -82,6 +88,18 @@ for index, row in data.iterrows():
     plt.title(row.Participant, loc='left')
     plt.title(('Distribution: ' + str(int(row.Distribution))), loc='center')
     plt.title(('Round: ' + str(int(row.Round))), loc='right')
+
+    # Graph Probability of Correctness of current sequence being played
+    plt.figure(2)
+
+    while not (len(ai_guesses) == len(player_guesses)):
+        if len(ai_guesses) < len(player_guesses):
+            ai_guesses.append(1.0)
+        else:
+            player_guesses.append(1.0)
+    x = np.arange(max(len(ai_guesses), len(player_guesses)))
+    plt.plot(x, player_guesses, color=player_color)
+    plt.plot(x, player_guesses, color=player_color)
 
     plt.show()
     print("clearing figure...")
