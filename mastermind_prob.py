@@ -46,10 +46,9 @@ def observe_sequence(sequence, solution):
     return (total_correct_color_count, total_correct_pos_count)
 
 
-def update_belief_state(sequences, input_sequence, solution, distribution):
-    observed_outcome = observe_sequence(input_sequence, solution)
+def update_belief_state(sequences, input_sequence, feedback, distribution):
     for sequence in list(sequences):
-        if observe_sequence(input_sequence, sequence) != observed_outcome:
+        if observe_sequence(input_sequence, sequence) != feedback:
             sequences.discard(sequence)
     return sequence_posteriors(sequences, distribution)
 
@@ -72,13 +71,14 @@ class Round:
 
     def next_turn(self, sequence):
         self.points += 1
+        feedback = observe_sequence(sequence, self.solution)
         if (self.verbose):
             print("Move: " + sequence)
             print("P(sequence win) = " + str(self.solution_prediction[sequence]))
-            print("Out: " + str(observe_sequence(sequence, self.solution)))
+            print("Out: " + str(feedback))
 
         self.solution_prediction = update_belief_state(
-            self.sequences, sequence, self.solution, self.game_dist)
+            self.sequences, sequence, feedback, self.game_dist)
         if (self.verbose):
             print("New Posteriors: ")
             print(self.solution_prediction)
