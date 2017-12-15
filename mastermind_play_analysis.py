@@ -56,15 +56,32 @@ for index, row in data.iterrows():
     # Plot performance of AI vs Human Player
     x = np.arange(max(len(sequences), turns) + 1)
     
-    while (len(ai_prob) != len(player_prob)):
-        if len(ai_prob) > len(player_prob):
+    ai_color = 'red'
+    player_color = 'blue'
+    if turns < len(sequences):
+        win_color = ai_color
+        vline = turns
+    elif len(sequences) > turns:
+        win_color = player_color
+        vline = len(sequences)
+    else:
+        win_color = 'green'
+        vline = turns
+
+    while not (len(ai_prob) == len(player_prob)):
+        if len(ai_prob) < len(player_prob):
             ai_prob.append(1.0)
         else:
             player_prob.append(1.0)
     
-    plt.plot(x, player_prob)
-    plt.plot(x, ai_prob)
-    plt.legend(['Player probability', 'AI probability', 'y = 3x'], loc='upper left')
+    plt.plot(x, player_prob, color=player_color)
+    plt.plot(x, ai_prob, color=ai_color)
+    plt.axvline(x=vline, color=win_color,linestyle='dashed')
+    
+    plt.legend(['Player probability', 'AI probability', ('Solution: ' + sol)], loc='upper left')
+    plt.title(row.Participant, loc='left')
+    plt.title(('Distribution: ' + str(int(row.Distribution))), loc='center')
+    plt.title(('Round: ' + str(int(row.Round))), loc='right')
 
     plt.show()
     print("clearing figure...")
