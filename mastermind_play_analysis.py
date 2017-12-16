@@ -109,7 +109,7 @@ for index, row in data.iterrows():
 
     # Graph 'Percieved Probability' of Correct Solution
     plt.subplot(211)
-    plt.plot(x, probs[0], color=colors[0])
+    plt.plot(x, probs[0], color=colors[0], linestyle='-.', linewidth=3)
     plt.plot(x, probs[1], color=colors[1])
     plt.plot(x, probs[2], color=colors[2])
     plt.axvline(x=vline, color=win_color,linestyle='dashed')
@@ -124,7 +124,7 @@ for index, row in data.iterrows():
     # Graph Probability of Correctness of current sequence being played
     plt.subplot(212)
     
-    plt.plot(x, guesses[0], color=colors[0])
+    plt.plot(x, guesses[0], color=colors[0], linestyle='-.', linewidth=3)
     plt.plot(x, guesses[1], color=colors[1])
     plt.plot(x, guesses[2], color=colors[2])
     plt.axvline(x=vline, color=win_color,linestyle='dashed')
