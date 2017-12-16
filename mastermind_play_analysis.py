@@ -30,7 +30,7 @@ for index, row in data.iterrows():
     print('Player:',row.Participant)
     print(row.Round)
     print(player_round.solution_prediction[sol])
-    player_guesses = []
+    player_guesses = [0.0]
     for seq in sequences:
         player_guesses.append(player_round.solution_prediction[seq])
         player_round.next_turn(seq)
@@ -44,7 +44,7 @@ for index, row in data.iterrows():
     out = (0,0)
     print("Solution:", sol)
     turns = 0
-    ai_guesses = []
+    ai_guesses = [0.0]
     while (out[1] != 3):
         seq = ai_player.play_turn(out)
         ai_guesses.append(ai_round.solution_prediction[seq])
@@ -65,7 +65,7 @@ for index, row in data.iterrows():
     if turns < len(sequences):
         win_color = ai_color
         vline = turns
-    elif len(sequences) > turns:
+    elif len(sequences) < turns:
         win_color = player_color
         vline = len(sequences)
     else:
@@ -79,28 +79,39 @@ for index, row in data.iterrows():
             player_prob.append(1.0)
 
     # Graph 'Percieved Probability' of Correct Solution
-    plt.figure(1)
+    plt.subplot(211)
     plt.plot(x, player_prob, color=player_color)
     plt.plot(x, ai_prob, color=ai_color)
     plt.axvline(x=vline, color=win_color,linestyle='dashed')
     
     plt.legend(['Player probability', 'AI probability', ('Solution: ' + sol)], loc='upper left')
-    plt.title(row.Participant, loc='left')
-    plt.title(('Distribution: ' + str(int(row.Distribution))), loc='center')
-    plt.title(('Round: ' + str(int(row.Round))), loc='right')
+    plot_title = row.Participant + ' -  Distribution: ' + str(int(row.Distribution)) \
+                                 + ' - Round: ' + str(int(row.Round))
+    plt.title('P(S=solution|Observations)', fontsize=10)
+    #plt.suptitle(row.Participant, loc='left')
+    #plt.suptitle(('Distribution: ' + str(int(row.Distribution))), loc='center')
+    #plt.suptitle(('Round: ' + str(int(row.Round))), loc='right')
 
     # Graph Probability of Correctness of current sequence being played
-    plt.figure(2)
+    plt.subplot(212)
 
     while not (len(ai_guesses) == len(player_guesses)):
         if len(ai_guesses) < len(player_guesses):
-            ai_guesses.append(1.0)
+            ai_guesses.append(ai_guesses[-1])
         else:
-            player_guesses.append(1.0)
-    x = np.arange(max(len(ai_guesses), len(player_guesses)))
+            player_guesses.append(player_guesses[-1])
     plt.plot(x, player_guesses, color=player_color)
-    plt.plot(x, player_guesses, color=player_color)
+    plt.plot(x, ai_guesses, color=ai_color)
+    plt.axvline(x=vline, color=win_color,linestyle='dashed')
+    
+    plt.title('P(S=guess|Observations)',fontsize=10)
+    #plt.legend(['Player probability', 'AI probability', ('Solution: ' + sol)], loc='upper left')
+    #plt.title(row.Participant, loc='left')
+    #plt.title(('Distribution: ' + str(int(row.Distribution))), loc='center')
+    #plt.title(('Round: ' + str(int(row.Round))), loc='right')
 
+    plt.subplots_adjust(hspace=0.4, top=0.8)
+    plt.suptitle(plot_title)
     plt.show()
     print("clearing figure...")
     plt.clf()
