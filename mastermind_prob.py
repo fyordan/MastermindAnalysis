@@ -46,10 +46,9 @@ def observe_sequence(sequence, solution):
     return (total_correct_color_count, total_correct_pos_count)
 
 
-def update_belief_state(sequences, input_sequence, solution, distribution):
-    observed_outcome = observe_sequence(input_sequence, solution)
+def update_belief_state(sequences, input_sequence, feedback, distribution):
     for sequence in list(sequences):
-        if observe_sequence(input_sequence, sequence) != observed_outcome:
+        if observe_sequence(input_sequence, sequence) != feedback:
             sequences.discard(sequence)
     return sequence_posteriors(sequences, distribution)
 
@@ -72,23 +71,63 @@ class Round:
 
     def next_turn(self, sequence):
         self.points += 1
+        feedback = observe_sequence(sequence, self.solution)
         if (self.verbose):
             print("Move: " + sequence)
             print("P(sequence win) = " + str(self.solution_prediction[sequence]))
-            print("Out: " + str(observe_sequence(sequence, self.solution)))
+            print("Out: " + str(feedback))
 
         self.solution_prediction = update_belief_state(
-            self.sequences, sequence, self.solution, self.game_dist)
+            self.sequences, sequence, feedback, self.game_dist)
         if (self.verbose):
             print("New Posteriors: ")
             print(self.solution_prediction)
             print("--------------------------------------------------------")
 
+class ComplexAI:
+    # get_sequence(belief_state, distr) -> sequence
+    def __init__(self, dist):
+        self.dist = dist
+        self.all_sequences = set([x+y+z for x in dist for y in dist for z in dist])
+        self.belief_state = sequence_posteriors(self.all_sequences, dist)
+        self.possible_seqs = self.all_sequences.copy()
+        
+    def update_belief_state(self, played_sequence, feedback):
+        self.belief_state = update_belief_state(self.possible_seqs,
+                                                played_sequence,
+                                                feedback,
+                                                self.dist)
 
-# round = Round("CTC", normal_dist, verbose=True)
-# round.next_turn("TCS")
-# round.next_turn("TCC")
-# round.next_turn("CTC")
+    def get_sequence(self):
+        if (len(self.possible_seqs) == 1):
+            return list(self.possible_seqs)[0]
+        best_s = None
+        best_val = 0.0
+        for s in self.all_sequences:
+            value = 0.0
+            for sol in self.possible_seqs:
+                feedback = observe_sequence(s, sol)
+                p_feedback = self.belief_state[sol]
+                pot_state = update_belief_state(self.possible_seqs.copy(),
+                                                s, feedback, self.dist)
+                value += p_feedback*max(pot_state.values())
+            if (value > best_val):
+                best_s = s
+                best_val = value
+        return best_s
+
+
+def play_game_with_AI():
+    ai = ComplexAI(normal_dist)
+    sol = get_random_sequence(normal_dist, 3)
+    out = (0,0)
+    round = Round(sol, normal_dist, verbose=True)
+    while (out[1] != 3):
+        seq = ai.get_sequence()
+        round.next_turn(seq)
+        out = observe_sequence(seq, sol)
+        ai.update_belief_state(seq, out)
+
 
 if __name__ == '__main__':
     sol = get_random_sequence(r1_2_3_dist, 3)
@@ -100,3 +139,4 @@ if __name__ == '__main__':
         out = observe_sequence(seq, sol)
         print("Out: " + str(out))
     print("Thanks For Playing! Score: " + str(round.points))
+    # play_game()
